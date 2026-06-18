@@ -1,15 +1,12 @@
 from fastapi import FastAPI, UploadFile, File
-
 from fastapi.middleware.cors import CORSMiddleware
 
+import os
 import shutil
 import json
-import os
 
 from resume_parser import extract_text
 from ai_analyzer import analyze_resume
-
-app = FastAPI()
 
 app = FastAPI()
 
@@ -25,8 +22,16 @@ app.add_middleware(
 
 UPLOAD_FOLDER = "uploads"
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(
+    UPLOAD_FOLDER,
+    exist_ok=True
+)
 
+@app.get("/")
+def home():
+    return {
+        "message": "Resume Analyzer API Running"
+    }
 
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
@@ -43,7 +48,7 @@ async def analyze(file: UploadFile = File(...)):
 
     result = analyze_resume(resume_text)
 
-    print("GPT RESULT:")
+    print("GPT RESPONSE:")
     print(result)
 
     try:

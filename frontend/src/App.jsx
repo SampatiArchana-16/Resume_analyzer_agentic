@@ -8,9 +8,10 @@ function App() {
 
   const uploadResume = async () => {
     if (!file) {
-      alert("Please select a PDF file");
+      alert("Please select a PDF");
       return;
     }
+
 
     try {
       setLoading(true);
@@ -30,17 +31,21 @@ function App() {
 
     } catch (error) {
       console.error(error);
-
       alert("Error while analyzing resume");
     } finally {
       setLoading(false);
     }
+
+
   };
 
   return (
     <div
       style={{
+        maxWidth: "900px",
+        margin: "auto",
         padding: "30px",
+        color: "white",
         fontFamily: "Arial"
       }}
     >
@@ -56,81 +61,155 @@ function App() {
 
       <button
         onClick={uploadResume}
-        style={{
-          marginLeft: "10px"
-        }}
+        style={{ marginLeft: "10px" }}
       >
         {loading ? "Analyzing..." : "Analyze"}
       </button>
 
       {result && (
-        <div style={{ marginTop: "20px" }}>
+        <div
+          style={{
+            marginTop: "20px",
+            background: "#1e1e2f",
+            padding: "25px",
+            borderRadius: "12px",
+            boxShadow: "0px 4px 12px rgba(0,0,0,0.3)"
+          }}
+        >
 
-          {/* ATS SCORE */}
-
-          <h2>
-            ATS Score:
-            {" "}
-            {result.ats_score || "N/A"}
+          <h2
+            style={{
+              color:
+                result.ats_score >= 80
+                  ? "#4CAF50"
+                  : result.ats_score >= 60
+                    ? "#FFC107"
+                    : "#F44336"
+            }}
+          >
+            ATS Score: {result.ats_score}
           </h2>
 
-          {/* SKILLS FOUND */}
+
+          <h3>Summary</h3>
+          <p>{result.summary || "No Summary"}</p>
+
+          <h3>Recommended Roles</h3>
+
+          <div>
+            {(result.recommended_roles || []).map(
+              (role, index) => (
+                <span
+                  key={index}
+                  style={{
+                    display: "inline-block",
+                    margin: "5px",
+                    padding: "8px 12px",
+                    background: "#2d3748",
+                    borderRadius: "20px"
+                  }}
+                >
+                  {role}
+                </span>
+              )
+            )}
+          </div>
 
           <h3>Skills Found</h3>
+          <div>
+            {(result.skills_found || []).map((item, index) => (
 
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {(result.skills_found || []).map((skill, index) => (
-              <li key={index}>
-                {skill}
-              </li>
+              <span
+                key={index}
+                style={{
+                  display: "inline-block",
+                  margin: "5px",
+                  padding: "8px 12px",
+                  background: "#2d3748",
+                  borderRadius: "20px"
+                }}
+              >
+                {item}
+              </span>
+
             ))}
-          </ul>
-
-          {/* MISSING SKILLS */}
+          </div>
 
           <h3>Missing Skills</h3>
-
-          <ul>
+          <div>
             {(result.missing_skills || []).map(
               (skill, index) => (
-                <li key={index}>
+                <span
+                  key={index}
+                  style={{
+                    display: "inline-block",
+                    margin: "5px",
+                    padding: "8px 12px",
+                    background: "#7f1d1d",
+                    borderRadius: "20px"
+                  }}
+                >
                   {skill}
-                </li>
+                </span>
               )
             )}
-          </ul>
-
-          {/* IMPROVEMENTS */}
+          </div>
 
           <h3>Improvements</h3>
+          <div>
+            {(result.missing_skills || []).map(
+              (skill, index) => (
+                <span
+                  key={index}
+                  style={{
+                    display: "inline-block",
+                    margin: "5px",
+                    padding: "8px 12px",
+                    background: "#7f1d1d",
+                    borderRadius: "20px"
+                  }}
+                >
+                  {skill}
+                </span>
+              )
+            )}
+          </div>
 
-          <ul>
-            {(result.improvements || []).map(
+          <h3>Strengths</h3>
+          <ul style={{ listStyle: "none" }}>
+            {(result.strengths || []).map(
               (item, index) => (
-                <li key={index}>
-                  {item}
-                </li>
+                <li key={index}>{item}</li>
               )
             )}
           </ul>
 
-          {/* DEBUG */}
+          <h3>Weaknesses</h3>
+          <ul style={{ listStyle: "none" }}>
+            {(result.weaknesses || []).map(
+              (item, index) => (
+                <li key={index}>{item}</li>
+              )
+            )}
+          </ul>
 
-          {result.error && (
-            <>
-              <h3>Error</h3>
-              <pre>
-                {JSON.stringify(
-                  result,
-                  null,
-                  2
-                )}
-              </pre>
-            </>
-          )}
+          <h3>Learning Roadmap</h3>
+          <ul style={{ listStyle: "none" }}>
+            {(result.learning_roadmap || []).map(
+              (item, index) => (
+                <li key={index}>{item}</li>
+              )
+            )}
+          </ul>
+
+          <hr />
+
+
         </div>
       )}
     </div>
+
+
   );
 }
 
