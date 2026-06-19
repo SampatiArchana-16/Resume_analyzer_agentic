@@ -1,314 +1,375 @@
 import { useState } from "react";
 import axios from "./api";
 
+import {
+    FaChartLine,
+    FaTools,
+    FaExclamationTriangle,
+    FaBriefcase
+} from "react-icons/fa";
+
 function App() {
-  const [file, setFile] = useState(null);
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+    const [file, setFile] = useState(null);
+    const [result, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  const uploadResume = async () => {
-    if (!file) {
-      alert("Please select a PDF");
-      return;
-    }
+    const uploadResume = async () => {
+        if (!file) {
+            alert("Please select a PDF");
+            return;
+        }
 
-    try {
-      setLoading(true);
+        try {
+            setLoading(true);
 
-      const formData = new FormData();
-      formData.append("file", file);
+            const formData = new FormData();
+            formData.append("file", file);
 
-      const res = await axios.post(
-        "/analyze",
-        formData
-      );
+            const res = await axios.post(
+                "/analyze",
+                formData
+            );
 
-      console.log(res.data);
+            setResult(res.data);
 
-      setResult(res.data);
+        } catch (error) {
+            console.error(error);
+            alert("Error while analyzing resume");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    } catch (error) {
-      console.error(error);
-      alert("Error while analyzing resume");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div
-      style={{
-        maxWidth: "1000px",
-        margin: "auto",
-        padding: "30px",
-        color: "white",
-        fontFamily: "Arial"
-      }}
-    >
-      <h1
-        style={{
-          textAlign: "center",
-          marginBottom: "20px"
-        }}
-      >
-        Resume Analyzer Agent
-      </h1>
-
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: "20px"
-        }}
-      >
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) =>
-            setFile(e.target.files[0])
-          }
-        />
-
-        <button
-          onClick={uploadResume}
-          style={{
-            marginLeft: "10px",
-            padding: "8px 16px",
-            cursor: "pointer"
-          }}
-        >
-          {loading ? "Analyzing..." : "Analyze"}
-        </button>
-      </div>
-
-      {result && (
-        <div
-          style={{
-            background: "#1e1e2f",
-            padding: "25px",
-            borderRadius: "15px",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
-          }}
-        >
-          {/* ATS SCORE */}
-
-          <h2
+    const Chip = ({ text, color }) => (
+        <span
             style={{
-              textAlign: "center",
-              color:
-                result.ats_score >= 80
-                  ? "#22c55e"
-                  : result.ats_score >= 60
-                  ? "#f59e0b"
-                  : "#ef4444"
-            }}
-          >
-            ATS Score: {result.ats_score}
-          </h2>
-
-          {/* Progress Bar */}
-
-          <div
-            style={{
-              width: "100%",
-              background: "#333",
-              borderRadius: "10px",
-              overflow: "hidden",
-              marginBottom: "25px"
-            }}
-          >
-            <div
-              style={{
-                width: `${result.ats_score || 0}%`,
-                background:
-                  result.ats_score >= 80
-                    ? "#22c55e"
-                    : result.ats_score >= 60
-                    ? "#f59e0b"
-                    : "#ef4444",
+                display: "inline-block",
+                margin: "5px",
+                padding: "8px 14px",
+                borderRadius: "20px",
+                background: color,
                 color: "white",
-                textAlign: "center",
-                padding: "8px"
-              }}
-            >
-              {result.ats_score}%
-            </div>
-          </div>
-
-          {/* SUMMARY */}
-
-          <h3>Summary</h3>
-
-          <p
-            style={{
-              lineHeight: "1.7"
+                fontSize: "14px",
             }}
-          >
-            {result.summary}
-          </p>
+        >
+            {text}
+        </span>
+    );
 
-          {/* ROLES */}
+    return (
+        <div
+            style={{
+                minHeight: "100vh",
+                background:
+                    "linear-gradient(135deg,#0f172a,#1e293b,#312e81)",
+                color: "white",
+                padding: "30px",
+                fontFamily: "Arial",
+            }}
+        >
+            <div
+                style={{
+                    maxWidth: "1100px",
+                    margin: "auto",
+                }}
+            >
+                <h1
+                    style={{
+                        textAlign: "center",
+                        fontSize: "50px",
+                        marginBottom: "10px",
 
-          <h3>Recommended Roles</h3>
-
-          <div>
-            {(result.recommended_roles || []).map(
-              (role, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#374151",
-                    borderRadius: "20px"
-                  }}
+                    }}
                 >
-                  {role}
-                </span>
-              )
-            )}
-          </div>
+                    Resume Analyzer Agent
+                </h1>
 
-          {/* SKILLS */}
-
-          <h3>Skills Found</h3>
-
-          <div>
-            {(result.skills_found || []).map(
-              (item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#2563eb",
-                    borderRadius: "20px"
-                  }}
+                <p
+                    style={{
+                        textAlign: "center",
+                        color: "#cbd5e1",
+                        marginBottom: "40px",
+                       
+                        marginTop: "30px"
+                    }}
                 >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
+                    Upload Resume • ATS Analysis • Career Guidance • Learning Roadmap
+                </p>
 
-          {/* MISSING SKILLS */}
-
-          <h3>Missing Skills</h3>
-
-          <div>
-            {(result.missing_skills || []).map(
-              (item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#dc2626",
-                    borderRadius: "20px"
-                  }}
-                >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
-
-          {/* IMPROVEMENTS */}
-
-          <h3>Improvements</h3>
-
-          <div>
-            {(result.improvements || []).map(
-              (item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#7c3aed",
-                    borderRadius: "20px"
-                  }}
-                >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
-
-          {/* STRENGTHS */}
-
-          <h3>Strengths</h3>
-
-          <div>
-            {(result.strengths || []).map(
-              (item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#16a34a",
-                    borderRadius: "20px"
-                  }}
-                >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
-
-          {/* WEAKNESSES */}
-
-          <h3>Weaknesses</h3>
-
-          <div>
-            {(result.weaknesses || []).map(
-              (item, index) => (
-                <span
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: "5px",
-                    padding: "8px 12px",
-                    background: "#991b1b",
-                    borderRadius: "20px"
-                  }}
-                >
-                  {item}
-                </span>
-              )
-            )}
-          </div>
-
-          {/* LEARNING ROADMAP */}
-
-          <h3>Learning Roadmap</h3>
-
-          <div>
-            {(result.learning_roadmap || []).map(
-              (item, index) => (
                 <div
-                  key={index}
-                  style={{
-                    background: "#374151",
-                    padding: "12px",
-                    marginTop: "10px",
-                    borderRadius: "10px"
-                  }}
+                    style={{
+                        textAlign: "center",
+                        marginBottom: "30px",
+                    }}
                 >
-                  {item}
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={(e) =>
+                            setFile(e.target.files[0])
+                        }
+                    />
+
+                    <button
+                        onClick={uploadResume}
+                        style={{
+                            marginLeft: "10px",
+                            padding: "10px 20px",
+                            border: "none",
+                            borderRadius: "8px",
+                            background: "#2563eb",
+                            color: "white",
+                            cursor: "pointer",
+                        }}
+                    >
+                        {loading ? "Analyzing..." : "Analyze"}
+                    </button>
                 </div>
-              )
-            )}
-          </div>
+
+                {loading && (
+                    <h2 style={{ textAlign: "center" }}>
+                        🤖 AI is analyzing your resume...
+                    </h2>
+                )}
+
+                {result && (
+                    <>
+                        {/* DASHBOARD CARDS */}
+
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "20px",
+                                justifyContent: "space-between",
+                                flexWrap: "wrap",
+                                marginBottom: "30px",
+                            }}
+                        >
+                            <div style={cardStyle}>
+                                <FaChartLine size={35} />
+                                <h3>ATS Score</h3>
+                                <h1>{result.ats_score}</h1>
+                            </div>
+
+                            <div style={cardStyle}>
+                                <FaTools size={35} />
+                                <h3>Skills</h3>
+
+
+
+                                <h1>
+                                    {(result.skills_found || []).length}
+                                </h1>
+                            </div>
+
+                            <div style={cardStyle}>
+                                <FaExclamationTriangle size={35} />
+                                <h3>Missing Skills</h3>
+                                <h1>
+                                    {(result.missing_skills || []).length}
+                                </h1>
+                            </div>
+
+                            <div style={cardStyle}>
+                                <FaBriefcase size={35} />
+                                <h3>Roles</h3>
+                                <h1>
+                                    {(result.recommended_roles || []).length}
+                                </h1>
+                            </div>
+                        </div>
+
+                        {/* ATS BAR */}
+
+                        <div
+                            style={{
+                                background: "#1e293b",
+                                padding: "20px",
+                                borderRadius: "15px",
+                                marginBottom: "25px",
+                            }}
+                        >
+                            <h2>
+                                ATS Score: {result.ats_score}
+                            </h2>
+
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: "25px",
+                                    background: "#334155",
+                                    borderRadius: "20px",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        width: `${result.ats_score}%`,
+                                        height: "100%",
+                                        background:
+                                            result.ats_score >= 80
+                                                ? "#22c55e"
+                                                : result.ats_score >= 60
+                                                    ? "#f59e0b"
+                                                    : "#ef4444",
+                                        textAlign: "center",
+                                        lineHeight: "25px",
+                                    }}
+                                >
+                                    {result.ats_score}%
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* SUMMARY */}
+
+                        <Section title="Summary">
+                            <p>{result.summary}</p>
+                        </Section>
+
+                        {/* ROLES */}
+
+                        <Section title="Recommended Roles">
+                            {(result.recommended_roles || []).map(
+                                (role, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={role}
+                                        color="#4f46e5"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* SKILLS */}
+
+                        <Section title="Skills Found">
+                            {(result.skills_found || []).map(
+                                (item, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={item}
+                                        color="#2563eb"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* MISSING */}
+
+                        <Section title="Missing Skills">
+                            {(result.missing_skills || []).map(
+                                (item, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={item}
+                                        color="#dc2626"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* IMPROVEMENTS */}
+
+                        <Section title="Improvements">
+                            {(result.improvements || []).map(
+                                (item, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={item}
+                                        color="#7c3aed"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* STRENGTHS */}
+
+                        <Section title="Strengths">
+                            {(result.strengths || []).map(
+                                (item, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={item}
+                                        color="#16a34a"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* WEAKNESSES */}
+
+                        <Section title="Weaknesses">
+                            {(result.weaknesses || []).map(
+                                (item, index) => (
+                                    <Chip
+                                        key={index}
+                                        text={item}
+                                        color="#b91c1c"
+                                    />
+                                )
+                            )}
+                        </Section>
+
+                        {/* ROADMAP */}
+
+                        <Section title="Learning Roadmap">
+                            {(result.learning_roadmap || []).map(
+                                (item, index) => (
+                                    <div
+                                        key={index}
+                                        style={{
+                                            background: "#334155",
+                                            padding: "15px",
+                                            borderRadius: "10px",
+                                            marginBottom: "10px",
+                                        }}
+                                    >
+                                        📚 {item}
+                                    </div>
+                                )
+                            )}
+                        </Section>
+                    </>
+                )}
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        color: "#94a3b8"
+                    }}
+                >
+                    Built with React + FastAPI + OpenAI
+                </div>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 }
+
+function Section({ title, children }) {
+    return (
+        <div
+            style={{
+                background: "#1e293b",
+                padding: "20px",
+                borderRadius: "15px",
+                marginBottom: "20px",
+            }}
+        >
+            <h2>{title}</h2>
+            {children}
+        </div>
+    );
+}
+
+const cardStyle = {
+    background: "#1e293b",
+    padding: "25px",
+    borderRadius: "20px",
+    textAlign: "center",
+    boxShadow: "0px 4px 15px rgba(0,0,0,0.3)",
+    transition: "0.3s",
+    cursor: "pointer"
+};
 
 export default App;
