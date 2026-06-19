@@ -13,7 +13,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "https://venerable-flan-f3b8d0.netlify.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
