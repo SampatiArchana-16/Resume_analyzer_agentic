@@ -11,13 +11,19 @@ client = OpenAI(
 def analyze_resume(resume_text):
 
     prompt = f"""
+    You are an ATS Resume Analyzer.
 
-    Analyze this resume.
+    Analyze the resume.
 
     Return ONLY valid JSON.
 
+    Do not return markdown.
+    Do not return explanations.
+
+    Required JSON format:
+
     {{
-    "ats_score": 85,
+    "ats_score": 0,
     "summary": "",
     "recommended_roles": [],
     "skills_found": [],
@@ -31,7 +37,7 @@ def analyze_resume(resume_text):
     Resume:
     {resume_text}
     """
-    
+
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
