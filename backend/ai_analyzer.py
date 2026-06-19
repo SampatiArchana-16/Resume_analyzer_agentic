@@ -11,59 +11,27 @@ client = OpenAI(
 def analyze_resume(resume_text):
 
     prompt = f"""
-You are an expert ATS Resume Analyzer.
 
-Analyze the resume and return ONLY valid JSON.
+    Analyze this resume.
 
-Return in this format:
+    Return ONLY valid JSON.
 
-{{
+    {{
     "ats_score": 85,
+    "summary": "",
+    "recommended_roles": [],
+    "skills_found": [],
+    "missing_skills": [],
+    "improvements": [],
+    "strengths": [],
+    "weaknesses": [],
+    "learning_roadmap": []
+    }}
 
-    "summary": "Short professional summary",
-
-    "recommended_roles": [
-        "AI Engineer",
-        "Machine Learning Engineer",
-        "Python Developer"
-    ],
-
-    "skills_found": [
-        "Python",
-        "FastAPI"
-    ],
-
-    "missing_skills": [
-        "Docker",
-        "AWS"
-    ],
-
-    "improvements": [
-        "Add quantified achievements",
-        "Add certifications"
-    ],
-
-    "strengths": [
-        "Strong Python skills",
-        "Good backend development experience"
-    ],
-
-    "weaknesses": [
-        "Limited cloud experience",
-        "No containerization experience"
-    ],
-
-    "learning_roadmap": [
-        "Month 1: Learn Docker",
-        "Month 2: Learn AWS",
-        "Month 3: Learn Kubernetes"
-    ]
-}}
-
-Resume:
-
-{resume_text}
-"""
+    Resume:
+    {resume_text}
+    """
+    
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
